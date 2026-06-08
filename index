@@ -1,0 +1,2182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales CRM - Pipeline Manager</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+      color: #333;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    input, select, textarea {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    button {
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 1.5rem;
+      background: white;
+      min-height: 100vh;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin: 0;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin: 0.5rem 0 0 0;
+    }
+
+    .btnPrimary {
+      background: linear-gradient(135deg, #185fa5 0%, #0f4a87 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(24, 95, 165, 0.15);
+    }
+
+    .btnPrimary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(24, 95, 165, 0.25);
+    }
+
+    .btnSecondary {
+      background: #f0f0f0;
+      color: #333;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btnSecondary:hover {
+      background: #e0e0e0;
+    }
+
+    .btnDanger {
+      background: #dc2626;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btnDanger:hover {
+      background: #b91c1c;
+    }
+
+    .btnEdit {
+      background: #f59e0b;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btnEdit:hover {
+      background: #d97706;
+    }
+
+    .btnClose {
+      background: none;
+      border: none;
+      font-size: 28px;
+      cursor: pointer;
+      color: #666;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btnBack {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #185fa5;
+      font-weight: 600;
+      padding: 0;
+    }
+
+    .statsGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .statCard {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+      border: 1px solid #bfdbfe;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .statLabel {
+      font-size: 12px;
+      color: #666;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 0.5rem 0;
+    }
+
+    .statValue {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .filterTabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .filterTab {
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .filterTab:hover {
+      background: #f3f4f6;
+    }
+
+    .filterTab.active {
+      background: #185fa5;
+      color: white;
+    }
+
+    .leadList {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .emptyState {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: #999;
+    }
+
+    .leadCard {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .leadCard:hover {
+      border-color: #185fa5;
+      box-shadow: 0 4px 12px rgba(24, 95, 165, 0.1);
+    }
+
+    .leadCard.high {
+      border-color: #fbbf24;
+      background: rgba(251, 191, 36, 0.02);
+    }
+
+    .leadCardHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .leadName {
+      margin: 0 0 0.25rem 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .leadContact {
+      margin: 0;
+      font-size: 13px;
+      color: #666;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+    }
+
+    .badge.high {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.medium {
+      background: #fef3c7;
+      color: #92400e;
+    }
+
+    .badge.low {
+      background: #e5e7eb;
+      color: #4b5563;
+    }
+
+    .miniPipeline {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 0.75rem;
+    }
+
+    .pipelineStep {
+      height: 4px;
+      flex: 1;
+      border-radius: 2px;
+      background: #e5e7eb;
+      transition: all 0.3s ease;
+    }
+
+    .pipelineStep.active {
+      background: #185fa5;
+    }
+
+    .leadMeta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .customerCard {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .customerCard:hover {
+      border-color: #047857;
+      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.1);
+    }
+
+    .tabNav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 2px solid #e5e7eb;
+      padding-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .tabButton {
+      background: transparent;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      color: #666;
+      transition: all 0.3s ease;
+    }
+
+    .tabButton:hover {
+      background: #f3f4f6;
+    }
+
+    .tabButton.active {
+      background: #185fa5;
+      color: white;
+    }
+
+    .formHeader {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .formHeader h2 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .formGroup {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .formGroup label {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: #333;
+    }
+
+    .input, .textarea {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 14px;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus, .textarea:focus {
+      outline: none;
+      border-color: #185fa5;
+      box-shadow: 0 0 0 3px rgba(24, 95, 165, 0.1);
+    }
+
+    .textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .infoCard {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .infoLabel {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #999;
+      margin: 0 0 0.75rem 0;
+    }
+
+    .infoValue {
+      font-size: 16px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin: 0;
+      word-break: break-all;
+    }
+
+    .statsRow {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .statSmall {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.25rem;
+      text-align: center;
+    }
+
+    .statSmall p {
+      margin: 0;
+      font-size: 12px;
+      font-weight: 600;
+      color: #999;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .statSmallValue {
+      font-size: 24px;
+      font-weight: 700;
+      margin-top: 0.5rem !important;
+    }
+
+    .section {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .sectionTitle {
+      margin: 0 0 1rem 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+    }
+
+    .stageButtons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .stageBtn {
+      flex: 1;
+      min-width: 80px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .stageBtn:hover {
+      border-color: #185fa5;
+    }
+
+    .stageBtn.active {
+      background: #185fa5;
+      color: white;
+      border-color: #185fa5;
+    }
+
+    .interactionTypes {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .typeBtn {
+      flex: 1;
+      min-width: 80px;
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: all 0.3s ease;
+    }
+
+    .typeBtn:hover {
+      border-color: #185fa5;
+    }
+
+    .typeBtn.active {
+      background: #185fa5;
+      color: white;
+      border-color: #185fa5;
+    }
+
+    .history {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .historyItem {
+      background: white;
+      border-left: 4px solid #e5e7eb;
+      padding: 1rem;
+      border-radius: 6px;
+    }
+
+    .historyType {
+      margin: 0 0 0.5rem 0;
+      font-weight: 700;
+      font-size: 14px;
+      color: #1a1a1a;
+    }
+
+    .historyNote {
+      margin: 0.5rem 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    .historyDate {
+      margin: 0.5rem 0 0 0;
+      font-size: 12px;
+      color: #999;
+    }
+
+    .customerBadge {
+      display: inline-block;
+      background: #047857;
+      color: white;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .convertButton {
+      background: linear-gradient(135deg, #047857 0%, #065f46 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(4, 120, 87, 0.15);
+    }
+
+    .convertButton:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(4, 120, 87, 0.25);
+    }
+
+    .emptyCustomers {
+      text-align: center;
+      padding: 2rem;
+      background: #f9fafb;
+      border-radius: 8px;
+      color: #999;
+    }
+
+    .whatsappBtn {
+      background: linear-gradient(135deg, #25d366 0%, #1fa855 100%);
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 8px rgba(37, 211, 102, 0.15);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .whatsappBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 211, 102, 0.25);
+    }
+
+    .contactSection {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .contactInfo {
+      flex: 1;
+    }
+
+    .statusMessage {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .statusMessage.success {
+      background: #d1fae5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .statusMessage.error {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .statusMessage.loading {
+      background: #dbeafe;
+      color: #185fa5;
+      border: 1px solid #bfdbfe;
+    }
+
+    .notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      z-index: 9999;
+      animation: slideIn 0.3s ease;
+      max-width: 400px;
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(400px);
+        opacity: 0;
+      }
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+
+    .notification.success {
+      background: #d1fae5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .notification.error {
+      background: #fee2e2;
+      color: #dc2626;
+      border: 1px solid #fecaca;
+    }
+
+    .notification.warning {
+      background: #fef3c7;
+      color: #92400e;
+      border: 1px solid #fcd34d;
+    }
+
+    .notification.info {
+      background: #dbeafe;
+      color: #185fa5;
+      border: 1px solid #bfdbfe;
+    }
+
+    .actionButtons {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .loginContainer {
+      max-width: 400px;
+      margin: 100px auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      text-align: center;
+    }
+
+    .loginContainer h1 {
+      margin: 0 0 1rem 0;
+      font-size: 28px;
+      color: #1a1a1a;
+    }
+
+    .loginContainer p {
+      margin: 0 0 2rem 0;
+      color: #666;
+    }
+
+    /* Task Management Styles */
+    .taskCard {
+      background: white;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+    }
+
+    .taskCard:hover {
+      border-color: #185fa5;
+      box-shadow: 0 4px 12px rgba(24, 95, 165, 0.1);
+    }
+
+    .taskCard.completed {
+      opacity: 0.6;
+      background: #f9fafb;
+    }
+
+    .taskCard.overdue {
+      border-color: #dc2626;
+      background: rgba(220, 38, 38, 0.02);
+    }
+
+    .taskCard.dueSoon {
+      border-color: #f59e0b;
+      background: rgba(245, 158, 11, 0.02);
+    }
+
+    .taskHeader {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .taskCheckbox {
+      width: 24px;
+      height: 24px;
+      min-width: 24px;
+      cursor: pointer;
+      border-radius: 6px;
+      border: 2px solid #ddd;
+      margin-top: 2px;
+      transition: all 0.3s ease;
+    }
+
+    .taskCheckbox:checked {
+      background: #185fa5;
+      border-color: #185fa5;
+    }
+
+    .taskContent {
+      flex: 1;
+    }
+
+    .taskTitle {
+      margin: 0;
+      font-weight: 600;
+      font-size: 15px;
+      color: #1a1a1a;
+    }
+
+    .taskCard.completed .taskTitle {
+      text-decoration: line-through;
+      color: #999;
+    }
+
+    .taskMeta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 12px;
+      color: #666;
+      flex-wrap: wrap;
+    }
+
+    .taskDue {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .dueIndicator {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #22c55e;
+    }
+
+    .dueIndicator.overdue {
+      background: #dc2626;
+    }
+
+    .dueIndicator.dueSoon {
+      background: #f59e0b;
+    }
+
+    .taskActions {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .taskPriority {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .taskPriority.high {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    .taskPriority.medium {
+      background: #fef3c7;
+      color: #78350f;
+    }
+
+    .taskPriority.low {
+      background: #dbeafe;
+      color: #0c2d6b;
+    }
+
+    .reminderCard {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 1px solid #fcd34d;
+      border-radius: 12px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .reminderIcon {
+      font-size: 40px;
+      margin-bottom: 0.5rem;
+    }
+
+    .reminderTitle {
+      font-size: 18px;
+      font-weight: 700;
+      color: #78350f;
+      margin: 0.5rem 0;
+    }
+
+    .reminderList {
+      background: white;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-top: 1rem;
+      text-align: left;
+    }
+
+    .reminderItem {
+      padding: 0.75rem;
+      border-bottom: 1px solid #e5e7eb;
+      font-size: 14px;
+    }
+
+    .reminderItem:last-child {
+      border-bottom: none;
+    }
+
+    .reminderItem strong {
+      color: #78350f;
+    }
+
+    .notificationSettings {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .notificationSettings label {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+      cursor: pointer;
+    }
+
+    .notificationSettings input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .notificationSettings input[type="time"] {
+      padding: 8px 12px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+
+  <script>
+    // Sales CRM - Google Apps Script Integration
+    class CRMApp {
+      constructor() {
+        this.leads = [];
+        this.customers = [];
+        this.tasks = [];
+        this.view = 'login';
+        this.activeTab = 'pipeline';
+        this.selectedLead = null;
+        this.selectedCustomer = null;
+        this.editingLead = null;
+        this.editingCustomer = null;
+        this.newLead = { name: '', contact: '', source: '', potential: 'medium' };
+        this.newTask = { title: '', dueDate: '', priority: 'medium', linkedId: null, linkedType: null };
+        this.interaction = { type: 'call', note: '' };
+        this.searchFilter = 'all';
+        this.notification = { message: '', type: 'info', visible: false };
+        this.stageSteps = ['new', 'contacted', 'proposal', 'negotiation', 'closed'];
+        this.stageLabels = { new: 'New', contacted: 'Contacted', proposal: 'Proposal', negotiation: 'Negotiating', closed: 'Closed' };
+        this.syncStatus = 'Not connected';
+        this.isOnline = navigator.onLine;
+        this.userName = localStorage.getItem('userName') || '';
+        
+        this.reminderSettings = {
+          enabled: localStorage.getItem('reminderEnabled') !== 'false',
+          notifyTime: localStorage.getItem('reminderTime') || '09:00'
+        };
+        
+        this.isSyncing = false;
+        this.lastSyncTime = 0;
+        
+        this.webAppUrl = 'https://script.google.com/macros/s/AKfycbzsRb9ey_PkNBmu1JIy24s5fRTqo-3ybJDagnkMFt-NfcUpJw8y2wltu6N88Xoyg2kA/exec';
+
+        window.addEventListener('online', () => { this.isOnline = true; });
+        window.addEventListener('offline', () => { this.isOnline = false; });
+
+        if (this.userName) {
+          this.view = 'dashboard';
+          this.loadDataFromSheets();
+          this.tasks = this.loadTasksLocal();
+        }
+
+        setInterval(() => {
+          if (this.view === 'dashboard' && !this.isSyncing && (Date.now() - this.lastSyncTime > 12000)) {
+            this.loadDataFromSheets(false);
+          }
+        }, 5000);
+
+        this.setupReminders();
+        this.render();
+      }
+
+      setupReminders() {
+        setInterval(() => {
+          if (this.reminderSettings.enabled && this.view === 'dashboard') {
+            const now = new Date();
+            const currentTime = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+            
+            if (currentTime === this.reminderSettings.notifyTime) {
+              this.checkAndNotifyReminders();
+            }
+          }
+        }, 60000);
+      }
+
+      checkAndNotifyReminders() {
+        const today = new Date().toISOString().split('T')[0];
+        const activeTasks = this.getActiveTasks();
+        const tasksToday = activeTasks.filter(t => t.dueDate === today);
+        const tasksOverdue = activeTasks.filter(t => t.dueDate < today);
+        const overdueLeads = this.leads.filter(l => {
+          const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+          return new Date(l.last_interaction).getTime() < threeDaysAgo && l.stage !== 'closed';
+        });
+
+        if (tasksToday.length > 0 || tasksOverdue.length > 0 || overdueLeads.length > 0) {
+          let message = '📋 Daily Reminders: ';
+          const details = [];
+          
+          if (tasksOverdue.length > 0) details.push(`${tasksOverdue.length} overdue task(s)`);
+          if (tasksToday.length > 0) details.push(`${tasksToday.length} task(s) due today`);
+          if (overdueLeads.length > 0) details.push(`${overdueLeads.length} lead(s) to follow up`);
+          
+          message += details.join(', ');
+          
+          this.requestNotificationPermission(() => {
+            this.sendBrowserNotification('CRM Reminders', message);
+          });
+        }
+      }
+
+      requestNotificationPermission(callback) {
+        if ('Notification' in window && Notification.permission === 'default') {
+          Notification.requestPermission().then(permission => {
+            if (permission === 'granted') callback();
+          });
+        } else if ('Notification' in window && Notification.permission === 'granted') {
+          callback();
+        }
+      }
+
+      sendBrowserNotification(title, message) {
+        if ('Notification' in window && Notification.permission === 'granted') {
+          new Notification(title, {
+            body: message,
+            icon: '📊',
+            tag: 'crm-reminder',
+            requireInteraction: false
+          });
+        }
+      }
+
+      getDaysUntilDue(dueDate) {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const due = new Date(dueDate);
+        const diff = due - today;
+        const days = Math.ceil(diff / (24 * 60 * 60 * 1000));
+        
+        if (days < 0) return { text: `${Math.abs(days)}d overdue`, status: 'overdue' };
+        if (days === 0) return { text: 'Due today', status: 'dueSoon' };
+        if (days === 1) return { text: 'Due tomorrow', status: 'dueSoon' };
+        if (days <= 3) return { text: `Due in ${days}d`, status: 'dueSoon' };
+        return { text: `Due in ${days}d`, status: 'normal' };
+      }
+
+      getActiveTasks() {
+        // Filter out completed tasks and sort by deadline and priority
+        const priorityOrder = { high: 0, medium: 1, low: 2 };
+        
+        return this.tasks
+          .filter(t => !t.completed)
+          .sort((a, b) => {
+            // First sort by due date (earlier dates first)
+            const dateA = new Date(a.dueDate).getTime();
+            const dateB = new Date(b.dueDate).getTime();
+            
+            if (dateA !== dateB) {
+              return dateA - dateB;
+            }
+            
+            // If same due date, sort by priority (high > medium > low)
+            return priorityOrder[a.priority] - priorityOrder[b.priority];
+          });
+      }
+
+      async loadDataFromSheets(showLoading = true) {
+        if (this.isSyncing) return;
+        try {
+          if (showLoading) {
+            this.syncStatus = 'Loading...';
+            this.render();
+          }
+
+          const response = await fetch(this.webAppUrl);
+          const data = await response.json();
+
+          if (data && (data.leads || data.customers)) {
+            this.leads = data.leads || [];
+            this.customers = data.customers || [];
+            this.tasks = data.tasks || [];
+            this.saveLeadsLocal();
+            this.saveCustomersLocal();
+            this.saveTasksLocal();
+          }
+
+          this.syncStatus = '✅ Synced Online';
+          this.render();
+        } catch (error) {
+          console.error('Load Error:', error);
+          this.leads = this.loadLeadsLocal();
+          this.customers = this.loadCustomersLocal();
+          this.tasks = this.loadTasksLocal();
+          this.syncStatus = '⚠️ Offline Mode';
+          this.render();
+        }
+      }
+
+      async updateSheetsData() {
+        if (!this.isOnline) return;
+        
+        this.isSyncing = true;
+        this.lastSyncTime = Date.now();
+        
+        try {
+          const payload = {
+            action: 'updateData',
+            leads: this.leads,
+            customers: this.customers,
+            tasks: this.tasks
+          };
+
+          const response = await fetch(this.webAppUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain' },
+            body: JSON.stringify(payload)
+          });
+
+          const result = await response.json();
+          
+          if (result.success) {
+            this.syncStatus = '✅ Synced Online';
+            this.showNotification('✅ Saved to Google Sheets', 'success');
+          } else {
+            throw new Error(result.error || 'Update failed');
+          }
+        } catch (error) {
+          console.error('Error updating sheets:', error);
+          this.syncStatus = '⚠️ Sync failed, saved locally';
+          this.showNotification('⚠️ Saved locally (will sync when online)', 'warning');
+        } finally {
+          this.isSyncing = false;
+          this.render();
+        }
+      }
+
+      showNotification(message, type = 'info') {
+        this.notification = { message, type, visible: true };
+        this.render();
+        
+        setTimeout(() => {
+          if (this.notification?.visible) {
+            this.notification.visible = false;
+            this.render();
+          }
+        }, 4000);
+      }
+
+      daysSinceInteraction(date) {
+        if (!date) return 'N/A';
+        const days = Math.floor((Date.now() - new Date(date).getTime()) / (24 * 60 * 60 * 1000));
+        if (days === 0) return 'Today';
+        if (days === 1) return 'Yesterday';
+        return `${days}d ago`;
+      }
+
+      getFilteredLeads() {
+        let filtered = this.leads;
+        if (this.searchFilter === 'high') filtered = this.leads.filter(l => l.potential === 'high');
+        if (this.searchFilter === 'overdue') {
+          const threeDaysAgo = Date.now() - 3 * 24 * 60 * 60 * 1000;
+          filtered = this.leads.filter(l => new Date(l.last_interaction).getTime() < threeDaysAgo && l.stage !== 'closed');
+        }
+        return filtered.sort((a, b) => new Date(b.last_interaction) - new Date(a.last_interaction));
+      }
+
+      async addLead() {
+        if (!this.newLead.name || !this.newLead.contact) {
+          this.showNotification('Name and contact are required', 'error');
+          return;
+        }
+
+        const lead = {
+          id: Date.now(),
+          name: this.newLead.name,
+          contact: this.newLead.contact,
+          source: this.newLead.source,
+          potential: this.newLead.potential,
+          stage: 'new',
+          interactions: [],
+          created_at: new Date().toISOString(),
+          last_interaction: new Date().toISOString()
+        };
+
+        this.leads.unshift(lead);
+        this.saveLeadsLocal();
+        this.showNotification('✅ Lead added & syncing...', 'success');
+        
+        this.newLead = { name: '', contact: '', source: '', potential: 'medium' };
+        this.view = 'dashboard';
+        this.activeTab = 'pipeline';
+        
+        this.updateSheetsData();
+      }
+
+      async addTask() {
+        if (!this.newTask.title || !this.newTask.dueDate) {
+          this.showNotification('Title and due date are required', 'error');
+          return;
+        }
+
+        const task = {
+          id: Date.now(),
+          title: this.newTask.title,
+          dueDate: this.newTask.dueDate,
+          priority: this.newTask.priority,
+          linkedId: this.newTask.linkedId,
+          linkedType: this.newTask.linkedType,
+          completed: false,
+          created_at: new Date().toISOString()
+        };
+
+        this.tasks.unshift(task);
+        this.saveTasksLocal();
+        this.showNotification('✅ Task added & syncing...', 'success');
+        
+        this.newTask = { title: '', dueDate: '', priority: 'medium', linkedId: null, linkedType: null };
+        this.view = 'dashboard';
+        this.activeTab = 'tasks';
+        
+        this.updateSheetsData();
+      }
+
+      async toggleTaskComplete(id) {
+        this.tasks = this.tasks.map(t => t.id === id ? { ...t, completed: !t.completed } : t);
+        this.saveTasksLocal();
+        this.updateSheetsData();
+      }
+
+      async deleteTask(id) {
+        if (confirm('Delete this task?')) {
+          this.tasks = this.tasks.filter(t => t.id !== id);
+          this.saveTasksLocal();
+          this.showNotification('✅ Task deleted', 'success');
+          this.updateSheetsData();
+        }
+      }
+
+      async editLead() {
+        if (!this.editingLead.name || !this.editingLead.contact) {
+          this.showNotification('Name and contact are required', 'error');
+          return;
+        }
+
+        this.leads = this.leads.map(l => l.id === this.editingLead.id ? this.editingLead : l);
+        this.selectedLead = this.editingLead;
+        this.editingLead = null;
+        this.saveLeadsLocal();
+        this.showNotification('✅ Lead updated & syncing...', 'success');
+        
+        this.updateSheetsData();
+        this.view = 'lead-detail';
+      }
+
+      async updateStage(id, newStage) {
+        this.leads = this.leads.map(l => 
+          l.id === id ? { ...l, stage: newStage, last_interaction: new Date().toISOString() } : l
+        );
+        if (this.selectedLead?.id === id) {
+          this.selectedLead = { ...this.selectedLead, stage: newStage, last_interaction: new Date().toISOString() };
+        }
+        
+        this.saveLeadsLocal();
+        this.updateSheetsData();
+      }
+
+      async addInteraction() {
+        if (!this.interaction.note.trim()) {
+          this.showNotification('Please add a note for the interaction', 'error');
+          return;
+        }
+        const updatedLead = {
+          ...this.selectedLead,
+          interactions: [...(this.selectedLead.interactions || []), { type: this.interaction.type, note: this.interaction.note, date: new Date().toISOString() }],
+          last_interaction: new Date().toISOString()
+        };
+        this.leads = this.leads.map(l => l.id === this.selectedLead.id ? updatedLead : l);
+        this.selectedLead = updatedLead;
+
+        this.interaction = { type: 'call', note: '' };
+        this.saveLeadsLocal();
+        this.updateSheetsData();
+        this.showNotification('✅ Interaction logged', 'success');
+      }
+
+      async deleteLead(id) {
+        if (confirm('Are you sure you want to delete this lead?')) {
+          this.leads = this.leads.filter(l => l.id !== id);
+          this.saveLeadsLocal();
+          this.view = 'dashboard';
+          this.showNotification('✅ Lead deleted', 'success');
+          this.updateSheetsData();
+        }
+      }
+
+      async convertToCustomer() {
+        if (!this.selectedLead) return;
+        
+        const customer = {
+          id: Date.now(),
+          name: this.selectedLead.name,
+          contact: this.selectedLead.contact,
+          source: this.selectedLead.source,
+          potential: this.selectedLead.potential,
+          converted_date: new Date().toISOString(),
+          last_contact: new Date().toISOString(),
+          interactions: this.selectedLead.interactions || [],
+          notes: ''
+        };
+
+        this.customers.unshift(customer);
+        this.leads = this.leads.filter(l => l.id !== this.selectedLead.id);
+        this.saveLeadsLocal();
+        this.saveCustomersLocal();
+        
+        this.activeTab = 'customers';
+        this.view = 'dashboard';
+        this.selectedLead = null;
+        this.showNotification('✅ Lead converted to customer', 'success');
+        this.updateSheetsData();
+      }
+
+      async addDirectCustomer() {
+        const name = document.getElementById('custName').value;
+        const contact = document.getElementById('custContact').value;
+        const source = document.getElementById('custSource').value;
+        const potential = document.getElementById('custPotential').value;
+        const notes = document.getElementById('custNotes').value;
+
+        if (!name || !contact) {
+          this.showNotification('Name and contact are required', 'error');
+          return;
+        }
+
+        const customer = {
+          id: Date.now(),
+          name: name,
+          contact: contact,
+          source: source,
+          potential: potential,
+          notes: notes,
+          interactions: notes ? [{ type: 'note', note: notes, date: new Date().toISOString() }] : [],
+          converted_date: new Date().toISOString(),
+          last_contact: new Date().toISOString()
+        };
+
+        this.customers.unshift(customer);
+        this.saveCustomersLocal();
+        this.showNotification('✅ Customer added & syncing...', 'success');
+        
+        this.view = 'dashboard';
+        this.activeTab = 'customers';
+        
+        this.updateSheetsData();
+      }
+
+      async editCustomer() {
+        if (!this.editingCustomer.name || !this.editingCustomer.contact) {
+          this.showNotification('Name and contact are required', 'error');
+          return;
+        }
+
+        this.customers = this.customers.map(c => c.id === this.editingCustomer.id ? this.editingCustomer : c);
+        this.selectedCustomer = this.editingCustomer;
+        this.editingCustomer = null;
+        this.saveCustomersLocal();
+        this.showNotification('✅ Customer updated & syncing...', 'success');
+        
+        this.updateSheetsData();
+        this.view = 'customer-detail';
+      }
+
+      async deleteCustomer(id) {
+        if (confirm('Are you sure you want to delete this customer?')) {
+          this.customers = this.customers.filter(c => c.id !== id);
+          this.saveCustomersLocal();
+          this.view = 'dashboard';
+          this.showNotification('✅ Customer deleted', 'success');
+          this.updateSheetsData();
+        }
+      }
+
+      async addCustomerInteraction() {
+        if (!this.interaction.note.trim()) {
+          this.showNotification('Please add a note for the interaction', 'error');
+          return;
+        }
+        const updatedCustomer = {
+          ...this.selectedCustomer,
+          interactions: [...(this.selectedCustomer.interactions || []), { type: this.interaction.type, note: this.interaction.note, date: new Date().toISOString() }],
+          last_contact: new Date().toISOString()
+        };
+        this.customers = this.customers.map(c => c.id === this.selectedCustomer.id ? updatedCustomer : c);
+        this.selectedCustomer = updatedCustomer;
+
+        this.interaction = { type: 'call', note: '' };
+        this.saveCustomersLocal();
+        this.updateSheetsData();
+        this.showNotification('✅ Interaction logged', 'success');
+      }
+
+      openWhatsApp(contact) {
+        if (!contact) {
+          this.showNotification('No contact information available', 'error');
+          return;
+        }
+        
+        let phone = contact.replace(/[\s\-\(\)]/g, '');
+        
+        if (contact.includes('@')) {
+          this.showNotification('This is an email address, not a WhatsApp number', 'info');
+          return;
+        }
+        
+        if (!phone.startsWith('+')) {
+          if (phone.startsWith('62')) {
+            phone = '+' + phone;
+          } else if (phone.startsWith('0')) {
+            phone = '+62' + phone.substring(1);
+          } else {
+            phone = '+62' + phone;
+          }
+        }
+        
+        const whatsappUrl = `https://wa.me/${phone.replace('+', '')}`;
+        window.open(whatsappUrl, '_blank');
+      }
+
+      saveLeadsLocal() {
+        localStorage.setItem('crm_leads', JSON.stringify(this.leads));
+      }
+
+      saveCustomersLocal() {
+        localStorage.setItem('crm_customers', JSON.stringify(this.customers));
+      }
+
+      saveTasksLocal() {
+        localStorage.setItem('crm_tasks', JSON.stringify(this.tasks));
+      }
+
+      loadLeadsLocal() {
+        const saved = localStorage.getItem('crm_leads');
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      loadCustomersLocal() {
+        const saved = localStorage.getItem('crm_customers');
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      loadTasksLocal() {
+        const saved = localStorage.getItem('crm_tasks');
+        return saved ? JSON.parse(saved) : [];
+      }
+
+      saveReminderSettings() {
+        localStorage.setItem('reminderEnabled', this.reminderSettings.enabled);
+        localStorage.setItem('reminderTime', this.reminderSettings.notifyTime);
+        this.showNotification('✅ Reminder settings saved', 'success');
+      }
+
+      connectWithName() {
+        const userName = document.getElementById('userName').value;
+        
+        if (!userName) {
+          this.showNotification('Please enter your name', 'error');
+          return;
+        }
+        
+        localStorage.setItem('userName', userName);
+        this.userName = userName;
+        
+        this.view = 'dashboard';
+        this.activeTab = 'pipeline';
+        this.loadDataFromSheets();
+      }
+
+      logout() {
+        if (confirm('Are you sure you want to logout?')) {
+          localStorage.removeItem('userName');
+          this.userName = '';
+          this.view = 'login';
+          this.leads = [];
+          this.customers = [];
+          this.tasks = [];
+          this.render();
+        }
+      }
+
+      renderLogin() {
+        return `
+          <div class="loginContainer">
+            <h1>📊 Sales CRM</h1>
+            <p>Enter your name to start managing leads</p>
+            
+            <div class="form">
+              <div class="formGroup">
+                <label>Your Name</label>
+                <input type="text" id="userName" placeholder="Your name" class="input" onkeypress="if(event.key==='Enter') app.connectWithName();">
+              </div>
+
+              <button class="btnPrimary" onclick="app.connectWithName();" style="width: 100%;">
+                Start Using CRM
+              </button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderDashboard() {
+        const filtered = this.getFilteredLeads();
+        const stats = {
+          total: this.leads.length,
+          inPipeline: this.leads.filter(l => l.stage !== 'closed').length,
+          high: this.leads.filter(l => l.potential === 'high').length,
+          customers: this.customers.length,
+          tasks: this.tasks.filter(t => !t.completed).length
+        };
+
+        return `
+          <div class="container">
+            <div class="header">
+              <div>
+                <h1 class="title">Sales Pipeline</h1>
+                <p class="subtitle">Welcome, ${this.userName}</p>
+              </div>
+              <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+                <button class="btnPrimary" onclick="app.view='add-lead'; app.render();">+ Add Lead</button>
+                <button class="btnSecondary" onclick="app.view='add-customer'; app.render();" style="background: #047857; color: white;">+ Add Customer</button>
+                <button class="btnSecondary" onclick="app.logout();">Logout</button>
+              </div>
+            </div>
+
+            ${this.notification.visible ? `
+              <div class="notification ${this.notification.type}">
+                ${this.notification.message}
+              </div>
+            ` : ''}
+
+            <div class="statusMessage loading" style="font-size: 12px; text-align: right;">
+              Status: ${this.syncStatus}
+            </div>
+
+            <div class="statsGrid">
+              <div class="statCard">
+                <p class="statLabel">Pipeline Leads</p>
+                <p class="statValue" style="color: #185fa5;">${stats.total}</p>
+              </div>
+              <div class="statCard">
+                <p class="statLabel">In Progress</p>
+                <p class="statValue" style="color: #ea580c;">${stats.inPipeline}</p>
+              </div>
+              <div class="statCard">
+                <p class="statLabel">High Potential</p>
+                <p class="statValue" style="color: #ea580c;">${stats.high}</p>
+              </div>
+              <div class="statCard">
+                <p class="statLabel">Pending Tasks</p>
+                <p class="statValue" style="color: #dc2626;">${stats.tasks}</p>
+              </div>
+            </div>
+
+            <div class="tabNav">
+              <button class="tabButton ${this.activeTab === 'pipeline' ? 'active' : ''}" onclick="app.activeTab='pipeline'; app.searchFilter='all'; app.render();">📊 Pipeline</button>
+              <button class="tabButton ${this.activeTab === 'customers' ? 'active' : ''}" onclick="app.activeTab='customers'; app.render();">⭐ Customers (${stats.customers})</button>
+              <button class="tabButton ${this.activeTab === 'tasks' ? 'active' : ''}" onclick="app.activeTab='tasks'; app.render();">📝 Tasks (${stats.tasks})</button>
+              <button class="tabButton ${this.activeTab === 'reminders' ? 'active' : ''}" onclick="app.activeTab='reminders'; app.render();">📋 Reminders</button>
+            </div>
+
+            ${this.activeTab === 'pipeline' ? `
+              <div class="filterTabs">
+                <button class="filterTab ${this.searchFilter === 'all' ? 'active' : ''}" onclick="app.searchFilter='all'; app.render();">All Leads</button>
+                <button class="filterTab ${this.searchFilter === 'high' ? 'active' : ''}" onclick="app.searchFilter='high'; app.render();">⭐ High Potential</button>
+                <button class="filterTab ${this.searchFilter === 'overdue' ? 'active' : ''}" onclick="app.searchFilter='overdue'; app.render();">🔔 Overdue</button>
+              </div>
+
+              <div class="leadList">
+                ${filtered.length === 0 ? `
+                  <div class="emptyState">
+                    <p>No leads to show</p>
+                    <button class="btnSecondary" onclick="app.view='add-lead'; app.render();">Add your first lead</button>
+                  </div>
+                ` : filtered.map(lead => `
+                  <div class="leadCard ${lead.potential === 'high' ? 'high' : ''}" onclick="app.selectedLead=app.leads.find(l=>l.id===${lead.id}); app.view='lead-detail'; app.render();">
+                    <div class="leadCardHeader">
+                      <div>
+                        <p class="leadName">${lead.name}</p>
+                        <p class="leadContact">${lead.contact}</p>
+                      </div>
+                      <div class="badge ${lead.potential}">${lead.potential}</div>
+                    </div>
+                    <div class="miniPipeline">
+                      ${this.stageSteps.map((s, i) => `
+                        <div class="pipelineStep ${s === lead.stage || this.stageSteps.indexOf(lead.stage) > i ? 'active' : ''}"></div>
+                      `).join('')}
+                    </div>
+                    <div class="leadMeta">
+                      <span>${this.stageLabels[lead.stage]}</span>
+                      <span>Last: ${this.daysSinceInteraction(lead.last_interaction)}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : this.activeTab === 'customers' ? `
+              <div class="leadList">
+                ${this.customers.length === 0 ? `
+                  <div class="emptyCustomers">
+                    <p>No customers yet</p>
+                    <p style="font-size: 12px; margin-top: 0.5rem;">Convert leads to customers when deals close!</p>
+                  </div>
+                ` : this.customers.map(customer => `
+                  <div class="customerCard" onclick="app.selectedCustomer=app.customers.find(c=>c.id===${customer.id}); app.view='customer-detail'; app.render();">
+                    <div class="leadCardHeader">
+                      <div>
+                        <p class="leadName">${customer.name}</p>
+                        <p class="leadContact">${customer.contact}</p>
+                      </div>
+                      <span class="customerBadge">✓ Customer</span>
+                    </div>
+                    <div style="margin: 0.75rem 0; font-size: 13px; color: #666;">
+                      Converted: ${new Date(customer.converted_date).toLocaleDateString()}
+                    </div>
+                    <div class="leadMeta">
+                      <span>Source: ${customer.source || 'N/A'}</span>
+                      <span>Last: ${this.daysSinceInteraction(customer.last_contact)}</span>
+                    </div>
+                  </div>
+                `).join('')}
+              </div>
+            ` : this.activeTab === 'tasks' ? `
+              <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <button class="btnPrimary" onclick="app.view='add-task'; app.render();">+ New Task</button>
+                <button class="btnSecondary" onclick="app.activeTab='reminders'; app.render();">📋 View Reminders</button>
+              </div>
+              <div class="leadList">
+                ${this.getActiveTasks().length === 0 ? `
+                  <div class="emptyState">
+                    <p>No active tasks</p>
+                    <button class="btnSecondary" onclick="app.view='add-task'; app.render();">Create your first task</button>
+                  </div>
+                ` : this.getActiveTasks().map(t => {
+                  const dueInfo = this.getDaysUntilDue(t.dueDate);
+                  const linkedInfo = t.linkedType === 'lead' ? this.leads.find(l => l.id === t.linkedId) : this.customers.find(c => c.id === t.linkedId);
+                  
+                  return `
+                    <div class="taskCard ${dueInfo.status === 'overdue' ? 'overdue' : ''} ${dueInfo.status === 'dueSoon' ? 'dueSoon' : ''}">
+                      <div class="taskHeader">
+                        <input type="checkbox" class="taskCheckbox" ${t.completed ? 'checked' : ''} onchange="app.toggleTaskComplete(${t.id}); app.render();">
+                        <div class="taskContent">
+                          <p class="taskTitle">${t.title}</p>
+                          <div class="taskMeta">
+                            <span class="taskDue"><span class="dueIndicator ${dueInfo.status}"></span>${dueInfo.text}</span>
+                            <span class="taskPriority ${t.priority}">${t.priority}</span>
+                            ${linkedInfo ? `<span>📌 ${linkedInfo.name}</span>` : ''}
+                          </div>
+                        </div>
+                      </div>
+                      <div class="taskActions">
+                        <button class="btnDanger" onclick="app.deleteTask(${t.id}); app.render();">Delete</button>
+                      </div>
+                    </div>
+                  `;
+                }).join('')}
+              </div>
+            ` : `
+              <div style="display: flex; gap: 1rem; margin-bottom: 2rem;">
+                <button class="btnPrimary" onclick="app.activeTab='tasks'; app.render();">📝 View All Tasks</button>
+                <button class="btnSecondary" onclick="app.view='add-task'; app.render();">+ New Task</button>
+              </div>
+              ${this.getActiveTasks().length === 0 ? `
+                <div class="reminderCard">
+                  <div class="reminderIcon">✅</div>
+                  <p class="reminderTitle">All caught up!</p>
+                  <p style="color: #78350f; margin: 0;">No pending tasks</p>
+                </div>
+              ` : `
+                <div class="reminderCard">
+                  <div class="reminderIcon">📌</div>
+                  <p class="reminderTitle">Active Tasks & Deadlines</p>
+                  <p style="color: #78350f; margin: 0.5rem 0 0 0;">${this.getActiveTasks().length} task(s) to complete</p>
+                </div>
+                <div class="section">
+                  <h3 class="sectionTitle">📅 Upcoming Deadlines</h3>
+                  <div class="history">
+                    ${this.getActiveTasks().slice(0, 10).map(t => {
+                      const dueInfo = this.getDaysUntilDue(t.dueDate);
+                      const linkedInfo = t.linkedType === 'lead' ? this.leads.find(l => l.id === t.linkedId) : this.customers.find(c => c.id === t.linkedId);
+                      
+                      return `
+                        <div class="historyItem" style="border-left-color: ${dueInfo.status === 'overdue' ? '#dc2626' : dueInfo.status === 'dueSoon' ? '#f59e0b' : '#22c55e'};">
+                          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem;">
+                            <div style="flex: 1;">
+                              <p class="historyType">${t.title}</p>
+                              <p class="historyNote" style="margin: 0.5rem 0; display: flex; gap: 1rem; flex-wrap: wrap;">
+                                <span class="taskPriority ${t.priority}">${t.priority} priority</span>
+                                <span class="taskDue"><span class="dueIndicator ${dueInfo.status}"></span>${dueInfo.text}</span>
+                                ${linkedInfo ? `<span>📌 ${linkedInfo.name}</span>` : ''}
+                              </p>
+                            </div>
+                            <input type="checkbox" class="taskCheckbox" onchange="app.toggleTaskComplete(${t.id}); app.render();">
+                          </div>
+                        </div>
+                      `;
+                    }).join('')}
+                  </div>
+                  ${this.getActiveTasks().length > 10 ? `
+                    <p style="text-align: center; color: #999; margin-top: 1rem; font-size: 12px;">+${this.getActiveTasks().length - 10} more tasks</p>
+                  ` : ''}
+                </div>
+              `}
+              <div class="section">
+                <h3 class="sectionTitle">⏰ Notification Settings</h3>
+                <div class="notificationSettings">
+                  <label>
+                    <input type="checkbox" ${this.reminderSettings.enabled ? 'checked' : ''} onchange="app.reminderSettings.enabled=this.checked; app.saveReminderSettings(); app.render();">
+                    <span>Enable daily reminders for upcoming tasks & overdue leads</span>
+                  </label>
+                  <div style="margin-top: 1rem;">
+                    <label>Remind me at:</label>
+                    <input type="time" value="${this.reminderSettings.notifyTime}" onchange="app.reminderSettings.notifyTime=this.value; app.saveReminderSettings();">
+                  </div>
+                  <p style="font-size: 12px; color: #666; margin-top: 0.75rem; margin-bottom: 0;">📢 You'll receive notifications for:</p>
+                  <ul style="font-size: 12px; color: #666; margin: 0.5rem 0 0 1.5rem;">
+                    <li>Tasks due today or overdue</li>
+                    <li>Leads with no interaction for 3+ days</li>
+                  </ul>
+                </div>
+              </div>
+            `}
+          </div>
+        `;
+      }
+
+      renderAddLead() {
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <h2>Add New Lead</h2>
+              <button class="btnClose" onclick="app.view='dashboard'; app.render();">×</button>
+            </div>
+
+            <div class="form">
+              <div class="formGroup">
+                <label>Name *</label>
+                <input type="text" placeholder="Full name or company" value="${this.newLead.name}" class="input" oninput="app.newLead.name=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Contact *</label>
+                <input type="text" placeholder="Email, phone, or WhatsApp" value="${this.newLead.contact}" class="input" oninput="app.newLead.contact=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Source</label>
+                <input type="text" placeholder="WhatsApp, LinkedIn, Email, Referral, etc." value="${this.newLead.source}" class="input" oninput="app.newLead.source=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Potential</label>
+                <select class="input" onchange="app.newLead.potential=this.value;">
+                  <option value="low" ${this.newLead.potential === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${this.newLead.potential === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${this.newLead.potential === 'high' ? 'selected' : ''}>High</option>
+                </select>
+              </div>
+
+              <button class="btnPrimary" onclick="app.addLead();" style="margin-top: 1.5rem;">Add Lead</button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderAddTask() {
+        const today = new Date().toISOString().split('T')[0];
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <h2>Create New Task</h2>
+              <button class="btnClose" onclick="app.view='dashboard'; app.activeTab='tasks'; app.render();">×</button>
+            </div>
+
+            <div class="form">
+              <div class="formGroup">
+                <label>Task Title *</label>
+                <input type="text" placeholder="e.g., Send proposal to John" value="${this.newTask.title}" class="input" oninput="app.newTask.title=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Due Date *</label>
+                <input type="date" value="${this.newTask.dueDate}" class="input" oninput="app.newTask.dueDate=this.value;" min="${today}">
+              </div>
+
+              <div class="formGroup">
+                <label>Priority</label>
+                <select class="input" onchange="app.newTask.priority=this.value;">
+                  <option value="low" ${this.newTask.priority === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${this.newTask.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${this.newTask.priority === 'high' ? 'selected' : ''}>High</option>
+                </select>
+              </div>
+
+              <div class="formGroup">
+                <label>Link to Lead/Customer (optional)</label>
+                <select class="input" onchange="const val = this.value.split(':'); app.newTask.linkedType = val[0] || null; app.newTask.linkedId = val[1] ? parseInt(val[1]) : null;">
+                  <option value="">Not linked</option>
+                  <optgroup label="Leads">
+                    ${this.leads.map(l => `<option value="lead:${l.id}">${l.name}</option>`).join('')}
+                  </optgroup>
+                  <optgroup label="Customers">
+                    ${this.customers.map(c => `<option value="customer:${c.id}">${c.name}</option>`).join('')}
+                  </optgroup>
+                </select>
+              </div>
+
+              <button class="btnPrimary" onclick="app.addTask();" style="margin-top: 1.5rem;">Create Task</button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderAddCustomer() {
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <h2>Add Existing Customer</h2>
+              <button class="btnClose" onclick="app.view='dashboard'; app.activeTab='customers'; app.render();">×</button>
+            </div>
+
+            <div class="form">
+              <div class="formGroup">
+                <label>Name *</label>
+                <input type="text" placeholder="Full name or company" id="custName" class="input">
+              </div>
+
+              <div class="formGroup">
+                <label>Contact *</label>
+                <input type="text" placeholder="Email, phone, or WhatsApp" id="custContact" class="input">
+              </div>
+
+              <div class="formGroup">
+                <label>Source</label>
+                <input type="text" placeholder="WhatsApp, LinkedIn, Email, Referral, In-person, etc." id="custSource" class="input">
+              </div>
+
+              <div class="formGroup">
+                <label>Potential/Value</label>
+                <select id="custPotential" class="input">
+                  <option value="low">Low</option>
+                  <option value="medium" selected>Medium</option>
+                  <option value="high">High</option>
+                </select>
+              </div>
+
+              <div class="formGroup">
+                <label>Notes (optional)</label>
+                <textarea id="custNotes" class="textarea" placeholder="Any notes about this customer..."></textarea>
+              </div>
+
+              <button class="btnPrimary" onclick="app.addDirectCustomer();" style="margin-top: 1.5rem; background: #047857;">Add Customer</button>
+            </div>
+          </div>
+        `;
+      }
+
+      renderEditLead() {
+        if (!this.editingLead) return '';
+
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <h2>Edit Lead</h2>
+              <button class="btnClose" onclick="app.editingLead=null; app.view='lead-detail'; app.render();">×</button>
+            </div>
+
+            <div class="form">
+              <div class="formGroup">
+                <label>Name *</label>
+                <input type="text" placeholder="Full name or company" value="${this.editingLead.name}" class="input" oninput="app.editingLead.name=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Contact *</label>
+                <input type="text" placeholder="Email, phone, or WhatsApp" value="${this.editingLead.contact}" class="input" oninput="app.editingLead.contact=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Source</label>
+                <input type="text" placeholder="WhatsApp, LinkedIn, Email, Referral, etc." value="${this.editingLead.source || ''}" class="input" oninput="app.editingLead.source=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Potential</label>
+                <select class="input" onchange="app.editingLead.potential=this.value;">
+                  <option value="low" ${this.editingLead.potential === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${this.editingLead.potential === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${this.editingLead.potential === 'high' ? 'selected' : ''}>High</option>
+                </select>
+              </div>
+
+              <div class="actionButtons">
+                <button class="btnPrimary" onclick="app.editLead();" style="margin-top: 1.5rem;">Save Changes</button>
+                <button class="btnSecondary" onclick="app.editingLead=null; app.view='lead-detail'; app.render();" style="margin-top: 1.5rem;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      renderEditCustomer() {
+        if (!this.editingCustomer) return '';
+
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <h2>Edit Customer</h2>
+              <button class="btnClose" onclick="app.editingCustomer=null; app.view='customer-detail'; app.render();">×</button>
+            </div>
+
+            <div class="form">
+              <div class="formGroup">
+                <label>Name *</label>
+                <input type="text" placeholder="Full name or company" value="${this.editingCustomer.name}" class="input" oninput="app.editingCustomer.name=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Contact *</label>
+                <input type="text" placeholder="Email, phone, or WhatsApp" value="${this.editingCustomer.contact}" class="input" oninput="app.editingCustomer.contact=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Source</label>
+                <input type="text" placeholder="WhatsApp, LinkedIn, Email, Referral, In-person, etc." value="${this.editingCustomer.source || ''}" class="input" oninput="app.editingCustomer.source=this.value;">
+              </div>
+
+              <div class="formGroup">
+                <label>Potential/Value</label>
+                <select class="input" onchange="app.editingCustomer.potential=this.value;">
+                  <option value="low" ${this.editingCustomer.potential === 'low' ? 'selected' : ''}>Low</option>
+                  <option value="medium" ${this.editingCustomer.potential === 'medium' ? 'selected' : ''}>Medium</option>
+                  <option value="high" ${this.editingCustomer.potential === 'high' ? 'selected' : ''}>High</option>
+                </select>
+              </div>
+
+              <div class="formGroup">
+                <label>Notes</label>
+                <textarea class="textarea" placeholder="Any notes about this customer..." oninput="app.editingCustomer.notes=this.value;">${this.editingCustomer.notes || ''}</textarea>
+              </div>
+
+              <div class="actionButtons">
+                <button class="btnPrimary" onclick="app.editCustomer();" style="margin-top: 1.5rem;">Save Changes</button>
+                <button class="btnSecondary" onclick="app.editingCustomer=null; app.view='customer-detail'; app.render();" style="margin-top: 1.5rem;">Cancel</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+
+      renderLeadDetail() {
+        if (!this.selectedLead) return '';
+        const potentialColor = { high: '#047857', medium: '#ea580c', low: '#666' }[this.selectedLead.potential];
+
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <button class="btnBack" onclick="app.view='dashboard'; app.render();">← Back</button>
+              <h2>${this.selectedLead.name}</h2>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btnEdit" onclick="app.editingLead={...app.selectedLead}; app.view='edit-lead'; app.render();">✏️ Edit</button>
+                <button class="btnDanger" onclick="app.deleteLead(${this.selectedLead.id});">Delete</button>
+              </div>
+            </div>
+
+            <div class="infoCard">
+              <p class="infoLabel">CONTACT</p>
+              <div class="contactSection">
+                <div class="contactInfo">
+                  <p class="infoValue">${this.selectedLead.contact}</p>
+                  ${this.selectedLead.source ? `<p style="margin: 0.5rem 0 0 0; font-size: 13px; color: #666;">Source: ${this.selectedLead.source}</p>` : ''}
+                </div>
+                <button class="whatsappBtn" onclick="app.openWhatsApp('${this.selectedLead.contact}');">
+                  <span>💬</span>
+                  <span>WhatsApp</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="statsRow">
+              <div class="statSmall">
+                <p>Potential</p>
+                <p class="statSmallValue" style="color: ${potentialColor};">${this.selectedLead.potential.charAt(0).toUpperCase() + this.selectedLead.potential.slice(1)}</p>
+              </div>
+              <div class="statSmall">
+                <p>Last Contact</p>
+                <p class="statSmallValue" style="color: #185fa5;">${this.daysSinceInteraction(this.selectedLead.last_interaction)}</p>
+              </div>
+            </div>
+
+            <div class="section">
+              <h3 class="sectionTitle">Move to Stage</h3>
+              <div class="stageButtons">
+                ${this.stageSteps.map(s => `
+                  <button class="stageBtn ${this.selectedLead.stage === s ? 'active' : ''}" onclick="app.updateStage(${this.selectedLead.id}, '${s}');">${this.stageLabels[s]}</button>
+                `).join('')}
+              </div>
+            </div>
+
+            ${this.selectedLead.stage === 'closed' ? `
+              <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+                <p style="margin: 0 0 1rem 0; font-weight: 600; color: #047857;">✓ Deal Closed!</p>
+                <button class="convertButton" onclick="app.convertToCustomer();">Convert to Customer</button>
+              </div>
+            ` : ''}
+
+            <div class="section">
+              <h3 class="sectionTitle">Log Interaction</h3>
+              <div class="interactionTypes">
+                <button class="typeBtn ${this.interaction.type === 'call' ? 'active' : ''}" onclick="app.interaction.type='call'; app.render();">📞 call</button>
+                <button class="typeBtn ${this.interaction.type === 'message' ? 'active' : ''}" onclick="app.interaction.type='message'; app.render();">💬 message</button>
+                <button class="typeBtn ${this.interaction.type === 'meeting' ? 'active' : ''}" onclick="app.interaction.type='meeting'; app.render();">☕ meeting</button>
+              </div>
+              <textarea class="textarea" placeholder="What happened?" oninput="app.interaction.note=this.value;">${this.interaction.note}</textarea>
+              <button class="btnPrimary" onclick="app.addInteraction();">Log Interaction</button>
+            </div>
+
+            ${this.selectedLead.interactions && this.selectedLead.interactions.length > 0 ? `
+              <div class="section">
+                <h3 class="sectionTitle">History</h3>
+                <div class="history">
+                  ${[...this.selectedLead.interactions].reverse().map((int, i) => `
+                    <div class="historyItem">
+                      <p class="historyType">${int.type === 'call' ? '📞' : int.type === 'message' ? '💬' : '☕'} ${int.type.charAt(0).toUpperCase() + int.type.slice(1)}</p>
+                      ${int.note ? `<p class="historyNote">${int.note}</p>` : ''}
+                      <p class="historyDate">${new Date(int.date).toLocaleDateString()} ${new Date(int.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      renderCustomerDetail() {
+        if (!this.selectedCustomer) return '';
+
+        return `
+          <div class="container">
+            <div class="formHeader">
+              <button class="btnBack" onclick="app.view='dashboard'; app.activeTab='customers'; app.render();">← Back</button>
+              <h2>${this.selectedCustomer.name}</h2>
+              <div style="display: flex; gap: 0.5rem;">
+                <button class="btnEdit" onclick="app.editingCustomer={...app.selectedCustomer}; app.view='edit-customer'; app.render();">✏️ Edit</button>
+                <button class="btnDanger" onclick="app.deleteCustomer(${this.selectedCustomer.id});">Delete</button>
+              </div>
+            </div>
+
+            <div style="background: #f0fdf4; border: 1px solid #86efac; border-radius: 8px; padding: 1rem; margin-bottom: 1.5rem;">
+              <span class="customerBadge">✓ Existing Customer</span>
+              <p style="margin: 0.5rem 0 0 0; font-size: 13px; color: #047857;">Converted: ${new Date(this.selectedCustomer.converted_date).toLocaleDateString()}</p>
+            </div>
+
+            <div class="infoCard">
+              <p class="infoLabel">CONTACT</p>
+              <div class="contactSection">
+                <div class="contactInfo">
+                  <p class="infoValue">${this.selectedCustomer.contact}</p>
+                  ${this.selectedCustomer.source ? `<p style="margin: 0.5rem 0 0 0; font-size: 13px; color: #666;">Source: ${this.selectedCustomer.source}</p>` : ''}
+                </div>
+                <button class="whatsappBtn" onclick="app.openWhatsApp('${this.selectedCustomer.contact}');">
+                  <span>💬</span>
+                  <span>WhatsApp</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="statsRow">
+              <div class="statSmall">
+                <p>Potential</p>
+                <p class="statSmallValue" style="color: #047857;">${this.selectedCustomer.potential.charAt(0).toUpperCase() + this.selectedCustomer.potential.slice(1)}</p>
+              </div>
+              <div class="statSmall">
+                <p>Last Contact</p>
+                <p class="statSmallValue" style="color: #185fa5;">${this.daysSinceInteraction(this.selectedCustomer.last_contact)}</p>
+              </div>
+            </div>
+
+            <div class="section">
+              <h3 class="sectionTitle">Log Interaction</h3>
+              <div class="interactionTypes">
+                <button class="typeBtn ${this.interaction.type === 'call' ? 'active' : ''}" onclick="app.interaction.type='call'; app.render();">📞 call</button>
+                <button class="typeBtn ${this.interaction.type === 'message' ? 'active' : ''}" onclick="app.interaction.type='message'; app.render();">💬 message</button>
+                <button class="typeBtn ${this.interaction.type === 'meeting' ? 'active' : ''}" onclick="app.interaction.type='meeting'; app.render();">☕ meeting</button>
+              </div>
+              <textarea class="textarea" placeholder="What happened?" oninput="app.interaction.note=this.value;">${this.interaction.note}</textarea>
+              <button class="btnPrimary" onclick="app.addCustomerInteraction();">Log Interaction</button>
+            </div>
+
+            ${this.selectedCustomer.interactions && this.selectedCustomer.interactions.length > 0 ? `
+              <div class="section">
+                <h3 class="sectionTitle">History</h3>
+                <div class="history">
+                  ${[...this.selectedCustomer.interactions].reverse().map((int, i) => `
+                    <div class="historyItem">
+                      <p class="historyType">${int.type === 'call' ? '📞' : int.type === 'message' ? '💬' : '☕'} ${int.type.charAt(0).toUpperCase() + int.type.slice(1)}</p>
+                      ${int.note ? `<p class="historyNote">${int.note}</p>` : ''}
+                      <p class="historyDate">${new Date(int.date).toLocaleDateString()} ${new Date(int.date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+                    </div>
+                  `).join('')}
+                </div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }
+
+      render() {
+        const app = document.getElementById('app');
+        if (this.view === 'login') {
+          app.innerHTML = this.renderLogin();
+        } else if (this.view === 'dashboard') {
+          app.innerHTML = this.renderDashboard();
+        } else if (this.view === 'add-lead') {
+          app.innerHTML = this.renderAddLead();
+        } else if (this.view === 'add-customer') {
+          app.innerHTML = this.renderAddCustomer();
+        } else if (this.view === 'add-task') {
+          app.innerHTML = this.renderAddTask();
+        } else if (this.view === 'edit-lead') {
+          app.innerHTML = this.renderEditLead();
+        } else if (this.view === 'edit-customer') {
+          app.innerHTML = this.renderEditCustomer();
+        } else if (this.view === 'lead-detail') {
+          app.innerHTML = this.renderLeadDetail();
+        } else if (this.view === 'customer-detail') {
+          app.innerHTML = this.renderCustomerDetail();
+        }
+      }
+    }
+
+    const app = new CRMApp();
+  </script>
+</body>
+</html>
